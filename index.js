@@ -54,7 +54,7 @@ import { Matrix4, Vector3,
         USE_FAST_BOOLS: true
       });
       
-      ifcLoader.load( './Dulon_mass.ifc', function ( model ) {
+      ifcLoader.load( './Dulon_bwk.ifc', function ( model ) {
         scene.add( model );
         model.position.x = -35;
         model.position.z = 32.5;
