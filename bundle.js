@@ -102878,15 +102878,15 @@ class IFCLoader extends Loader {
 
 }
 
-const lat = document.getElementById('lat');
-  const lng = document.getElementById('lng');
+let lat = document.getElementById('lat');
+  let lng = document.getElementById('lng');
   let filtersoup = ["all"];
-  const modelOrigin = [lat.value, lng.value];
-  const modelAltitude = 10;
-  const modelRotate = [Math.PI / 2, 0, 0];
-  const modelAsMercatorCoordinate = mapboxgl.MercatorCoordinate.fromLngLat(modelOrigin, modelAltitude);
+  let modelOrigin = [lat.value, lng.value];
+  let modelAltitude = 0;
+  let modelRotate = [Math.PI / 2, -1.4, 0];
+  let modelAsMercatorCoordinate = mapboxgl.MercatorCoordinate.fromLngLat(modelOrigin, modelAltitude);
    
-  const modelTransform = {
+  let modelTransform = {
     translateX: modelAsMercatorCoordinate.x,
     translateY: modelAsMercatorCoordinate.y,
     translateZ: modelAsMercatorCoordinate.z,
@@ -103072,17 +103072,15 @@ const lat = document.getElementById('lat');
             ifcURL,
             (ifcModel) => {
               scene.add(ifcModel);
-              //ifcModel.position.x = -35;
-              //ifcModel.position.z = 32.5;
-              //ifcModel.position.y = -1.4;
+              ifcModel.position.x = 20;
+              ifcModel.position.z = 37.5;
+              ifcModel.position.y = 0;
               console.log(ifcModel);
             });
       
     },
     false
   );
-
-
 
   lat.addEventListener(
     'change',
