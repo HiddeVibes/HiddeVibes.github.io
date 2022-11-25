@@ -9,8 +9,8 @@ import { Matrix4, Vector3,
   
   const lat = document.getElementById('lat');
   const lng = document.getElementById('lng');
-
-  const modelOrigin = [5.662889884778613, 52.02064642420796];
+  let filtersoup = ["all"];
+  const modelOrigin = [lat.value, lng.value];
   const modelAltitude = 10;
   const modelRotate = [Math.PI / 2, 0, 0];
   const modelAsMercatorCoordinate = mapboxgl.MercatorCoordinate.fromLngLat(modelOrigin, modelAltitude);
@@ -29,8 +29,8 @@ import { Matrix4, Vector3,
   const map = new mapboxgl.Map({
     container: 'map',
     style: 'mapbox://styles/mapbox/light-v10',
-    zoom: 19.5,
-    center: [-0.1404545, 51.5220163],
+    zoom: 18,
+    center: [lat.value, lng.value],
     pitch: 60,
     bearing: -70,
     antialias: true
@@ -147,8 +147,6 @@ import { Matrix4, Vector3,
         labelLayerId
     );
     
-
-    const filtersoup = ["all"];
     // When a click event occurs on a feature in the states layer,
     // open a popup at the location of the click, with description
     // HTML from the click event's properties.
@@ -168,6 +166,7 @@ import { Matrix4, Vector3,
       {
         filtersoup.push(filter[i]);
       }
+      console.log(filtersoup);
       map.setFilter("3d-buildings", filtersoup);
 
     });
@@ -188,7 +187,6 @@ import { Matrix4, Vector3,
   });
 
   // Sets up the IFC loading
-  
   const ifcLoader = new IFCLoader();
   ifcLoader.ifcManager.setWasmPath("/");
   ifcLoader.ifcManager.applyWebIfcConfig ({ USE_FAST_BOOLS: true });
@@ -230,12 +228,18 @@ import { Matrix4, Vector3,
   );
 
   document.getElementById('fly').addEventListener('click', () => {
-    lattitude = +lat.value;
-    longitude = +lng.value;
+    lattitude = lat.value;
+    longitude = lng.value;
 
     map.flyTo({
     center: [lattitude, longitude],
     duration: 0,
     essential: true,
     });
+  });
+
+  document.getElementById('reset').addEventListener('click', () => {
+    filtersoup = ["all"];
+    console.log(filtersoup);
+    map.setFilter("3d-buildings", filtersoup);
   });
