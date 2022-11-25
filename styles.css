@@ -1,17 +1,78 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+* { margin:0; padding:0; box-sizing: border-box;}
 
-html, body {
+html{
     overflow: hidden;
 }
 
-#map {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
+body{
+    overflow: hidden;
     height: 100%;
-  }
+    width: 100%§;
+    margin: 0;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    text-align: center;
+
+}
+
+.header{
+    text-align: center;
+    background: rgb(25, 66, 99);;
+    padding: 20px;
+}
+
+.header h1{
+    font-family: 'Open Sans', sans-serif;
+    font-size: 52px;
+    /*text-shadow: 3px 2px rgb(248, 119, 55);*/
+    color: rgb(147, 188, 68);
+}
+
+.subheader{
+    background:rgb(147, 188, 68);
+    padding: 15px;
+}
+
+.lat, .lng{
+    margin-right: 50px;
+}
+
+
+#file-input {
+    z-index: 1;
+    position: relative;
+    font-size: 15px;
+}
+
+.canvas {
+    position:absolute;
+    left:50%;
+    top:50%;
+    width: 90%;
+    height: 80%;
+    transform: translate(-50%, -30%);
+}
+
+
+
+  #map{
+    position: relative;
+    height: 100% !important;
+    width: 100% !important;
+    z-index: 100;
+}
+
+#fly{
+    padding: 5px;
+}
+
+/*
+.canvas {
+    position:absolute;
+    left:50%;
+    top:50%;
+    width: 90%;
+    height: 80%;
+    transform: translate(-50%, -30%);
+}
+*/

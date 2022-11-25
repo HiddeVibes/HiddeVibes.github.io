@@ -12,7 +12,29 @@
 
 </head>
 <body>
-    <div id="map"></div>
+    <div class="header">
+        <h1>Vibes IFC Viewer</h1>
+      </div>
+      <div class="subheader">
+        <div class="coords">
+          <span>
+            Pick local IFC file: <input type="file" name="load" id="file-input" />
+          </span>
+          <span class="lat">
+            <label for="lat">Lat: </label>
+            <input type="text" id="lat" name="lat">
+          </span>
+          <span class="lng">
+            <label for="lng">Lng: </label>
+            <input type="text" id="lng" name="lng">
+          </span>
+          <span class="fly"><button id="fly">Change Location</button></span>
+        </div>
+      </div>
+      <div class="canvas">
+        <div id="map"></div>
+      </div>
+      
     <script src="bundle.js"></script>
 </body>
 </html>

@@ -102878,21 +102878,12 @@ class IFCLoader extends Loader {
 
 }
 
-mapboxgl.accessToken = 'pk.eyJ1IjoiaGlkZGUtdmliZXMiLCJhIjoiY2xhdGd6djZxMDBweDNwcno3eHMwZjZnYSJ9.y34yz7i9TANUsSYYPabwVw';
-  const map = new mapboxgl.Map({
-    container: 'map',
-    style: 'mapbox://styles/mapbox/light-v10',
-    zoom: 19.5,
-    center: [5.662889884778613, 52.02064642420796],
-    pitch: 60,
-    bearing: -70,
-    antialias: true
-  });
-  
+const lat = document.getElementById('lat');
+  const lng = document.getElementById('lng');
+
   const modelOrigin = [5.662889884778613, 52.02064642420796];
   const modelAltitude = 10;
   const modelRotate = [Math.PI / 2, 0, 0];
-   
   const modelAsMercatorCoordinate = mapboxgl.MercatorCoordinate.fromLngLat(modelOrigin, modelAltitude);
    
   const modelTransform = {
@@ -102904,7 +102895,18 @@ mapboxgl.accessToken = 'pk.eyJ1IjoiaGlkZGUtdmliZXMiLCJhIjoiY2xhdGd6djZxMDBweDNwc
     rotateZ: modelRotate[2],
     scale: modelAsMercatorCoordinate.meterInMercatorCoordinateUnits()
   };
-   
+
+  mapboxgl.accessToken = 'pk.eyJ1IjoiaGlkZGUtdmliZXMiLCJhIjoiY2xhdGd6djZxMDBweDNwcno3eHMwZjZnYSJ9.y34yz7i9TANUsSYYPabwVw';
+  const map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/light-v10',
+    zoom: 19.5,
+    center: [-0.1404545, 51.5220163],
+    pitch: 60,
+    bearing: -70,
+    antialias: true
+  });
+
   const scene = new Scene();
   const camera = new PerspectiveCamera();
   const renderer = new WebGLRenderer({
@@ -102920,18 +102922,6 @@ mapboxgl.accessToken = 'pk.eyJ1IjoiaGlkZGUtdmliZXMiLCJhIjoiY2xhdGd6djZxMDBweDNwc
     renderingMode: '3d',
   
     onAdd: function () {
-      const ifcLoader = new IFCLoader();
-      ifcLoader.ifcManager.applyWebIfcConfig({
-        USE_FAST_BOOLS: true
-      });
-      
-      ifcLoader.load( './Dulon_mass.ifc', function ( model ) {
-        scene.add( model );
-        model.position.x = -35;
-        model.position.z = 32.5;
-        model.rotation.y = -1.4;
-      });
-  
       const directionalLight = new DirectionalLight(0x404040);
       const directionalLight2 = new DirectionalLight(0x404040);
       const ambientLight = new AmbientLight( 0x404040, 3 );
@@ -102941,7 +102931,6 @@ mapboxgl.accessToken = 'pk.eyJ1IjoiaGlkZGUtdmliZXMiLCJhIjoiY2xhdGd6djZxMDBweDNwc
   
       scene.add(directionalLight, directionalLight2, ambientLight);
   },
-  
     render: function (gl, matrix) {
       const rotationX = new Matrix4().makeRotationAxis(
       new Vector3$1(1, 0, 0), modelTransform.rotateX);
@@ -102972,8 +102961,9 @@ mapboxgl.accessToken = 'pk.eyJ1IjoiaGlkZGUtdmliZXMiLCJhIjoiY2xhdGd6djZxMDBweDNwc
       renderer.render(scene, camera);
       map.triggerRepaint();
     }
+
   };
-   
+
   map.on('style.load', () => {
     map.addLayer(customLayer, 'waterway-label');
   });
@@ -102985,13 +102975,14 @@ mapboxgl.accessToken = 'pk.eyJ1IjoiaGlkZGUtdmliZXMiLCJhIjoiY2xhdGd6djZxMDBweDNwc
         (layer) => layer.type === 'symbol' && layer.layout['text-field']
     ).id;
 
+    map.setLayoutProperty('building', 'visibility', 'none');
 
   // The 'building' layer in the Mapbox Streets
   // vector tileset contains building height data
   // from OpenStreetMap.
     map.addLayer(
         {
-          'id': 'add-3d-buildings',
+          'id': '3d-buildings',
           'source': 'composite',
           'source-layer': 'building',
           'filter': ['==', 'extrude', 'true'],
@@ -103027,17 +103018,29 @@ mapboxgl.accessToken = 'pk.eyJ1IjoiaGlkZGUtdmliZXMiLCJhIjoiY2xhdGd6djZxMDBweDNwc
         labelLayerId
     );
     
+
+    const filtersoup = ["all"];
     // When a click event occurs on a feature in the states layer,
     // open a popup at the location of the click, with description
     // HTML from the click event's properties.
     map.on('click', function(e){
-      var features = map.queryRenderedFeatures(e.point,{
-        layers: ['building']
+      var bbox = [[e.point.x - 5, e.point.y-5],[e.point.x+5, e.point.y+5]];
+
+      var features = map.queryRenderedFeatures(bbox,{
+        layers: ['3d-buildings']
       });
-      console.log(features);
-      console.log(features[0].properties['extrude']);
-      features[0].properties['extrude'] = 'false';
-      map.triggerRepaint();
+
+      var filter = features.reduce(function(memo, feature){
+        memo.push(["!=", ["id"], feature.id]);
+        return memo;
+      },  ['all', ['!=', ["id"], -1]]);
+
+      for(var i = 1; i < filter.length; i++)
+      {
+        filtersoup.push(filter[i]);
+      }
+      map.setFilter("3d-buildings", filtersoup);
+
     });
       
 
@@ -103053,4 +103056,57 @@ mapboxgl.accessToken = 'pk.eyJ1IjoiaGlkZGUtdmliZXMiLCJhIjoiY2xhdGd6djZxMDBweDNwc
       map.getCanvas().style.cursor = '';
       });
 
+  });
+
+  // Sets up the IFC loading
+  
+  const ifcLoader = new IFCLoader();
+  ifcLoader.ifcManager.setWasmPath("/");
+  ifcLoader.ifcManager.applyWebIfcConfig ({ USE_FAST_BOOLS: true });
+  const input = document.getElementById("file-input");
+  input.addEventListener(
+    "change",
+    (changed) => {
+      console.log("loading ifc model");
+      const file = changed.target.files[0];
+      var ifcURL = URL.createObjectURL(file);
+      ifcLoader.load(
+            ifcURL,
+            (ifcModel) => {
+              scene.add(ifcModel);
+              //ifcModel.position.x = -35;
+              //ifcModel.position.z = 32.5;
+              //ifcModel.position.y = -1.4;
+              console.log(ifcModel);
+            });
+      
+    },
+    false
+  );
+
+
+
+  lat.addEventListener(
+    'change',
+    (event) => {
+      console.log(event.target.value);
+    }
+  );
+
+  lng.addEventListener(
+    'change',
+    (event) => {
+      console.log(event.target.value);
+    }
+  );
+
+  document.getElementById('fly').addEventListener('click', () => {
+    lattitude = +lat.value;
+    longitude = +lng.value;
+
+    map.flyTo({
+    center: [lattitude, longitude],
+    duration: 0,
+    essential: true,
+    });
   });
