@@ -30,6 +30,22 @@ let modelTransform = {
 };
 
 
+function updateModelPosition(){
+  console.log('update model position');
+  modelOrigin = [lat.value, lng.value]
+  modelAsMercatorCoordinate = mapboxgl.MercatorCoordinate.fromLngLat(modelOrigin, modelAltitude)
+  modelTransform = {
+    translateX: modelAsMercatorCoordinate.x,
+    translateY: modelAsMercatorCoordinate.y,
+    translateZ: modelAsMercatorCoordinate.z,
+    rotateX: modelRotate[0],
+    rotateY: modelRotate[1],
+    rotateZ: modelRotate[2],
+    scale: modelAsMercatorCoordinate.meterInMercatorCoordinateUnits()
+  };
+}
+
+
 mapboxgl.accessToken = 'pk.eyJ1IjoiaGlkZGUtdmliZXMiLCJhIjoiY2xhdGd6djZxMDBweDNwcno3eHMwZjZnYSJ9.y34yz7i9TANUsSYYPabwVw';
 const map = new mapboxgl.Map({
   container: 'map',
@@ -62,7 +78,6 @@ const customLayer = {
 
     directionalLight.position.set(0, -70, 100).normalize();
     directionalLight2.position.set(0, 70, 100).normalize();
-
     scene.add(directionalLight, directionalLight2, ambientLight);
   },
   render: function (gl, matrix) {
@@ -223,6 +238,7 @@ lat.addEventListener(
   'change',
   (event) => {
     console.log(event.target.value);
+    updateModelPosition();
   }
 );
 
@@ -230,13 +246,14 @@ lng.addEventListener(
   'change',
   (event) => {
     console.log(event.target.value);
+    updateModelPosition();
   }
 );
 
 document.getElementById('fly').addEventListener('click', () => {
   lattitude = lat.value;
   longitude = lng.value;
-
+  updateModelPosition;
   map.flyTo({
     center: [lattitude, longitude],
     duration: 0,
