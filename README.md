@@ -1,3 +1,3 @@
-# IFC.js - BILT 2022 🚀
+# Vibes IFC Viewer
 
-How to create a 3D GIS + BIM app in 60 minutes?
+What can you do with a webbased ifc viewer when you connect it to a 3d map
